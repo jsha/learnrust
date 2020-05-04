@@ -1,7 +1,7 @@
 use std::env;
 use std::fs::File;
 use std::io;
-use std::io::BufRead;
+use std::io::Read;
 use std::io::Write;
 use std::process;
 
@@ -24,24 +24,25 @@ fn copy_to_stdout(filename: &str) -> Result<(), ()> {
     match File::open(filename) {
         Ok(file) => copy_file_to_stdout(filename, &file),
         Err(s) => {
-            let _ = writeln!(io::stderr(), "{}: {}\n", filename, s);
+            let _ = writeln!(io::stderr(), "{}: {}", filename, s);
             Err(())
         }
     }
 }
 
 fn copy_file_to_stdout<T: io::Read>(filename: &str, file: T) -> Result<(), ()> {
-    // TODO: If there is a read error, print whatever partial line was read before the error.
-    for line in io::BufReader::new(file).lines() {
-        match line {
-            Ok(line) => {
-                let _ = writeln!(io::stdout(), "{}", line);
+    let mut reader = io::BufReader::new(file);
+    let mut buffer = [0; 10];
+    loop {
+        match reader.read(&mut buffer) {
+            Ok(0) => return Ok(()),
+            Ok(n) => {
+                let _ = io::stdout().write(&buffer[..n]);
             }
             Err(s) => {
-                let _ = writeln!(io::stderr(), "{}: {}\n", filename, s);
+                let _ = writeln!(io::stderr(), "{}: {}", filename, s);
                 return Err(());
             }
         }
     }
-    Ok(())
 }
