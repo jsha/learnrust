@@ -27,7 +27,7 @@ fn copy_to_stdout(filename: &str) -> Result<(), ()> {
     match File::open(filename) {
         Ok(file) => copy_file_to_stdout(filename, &file),
         Err(s) => {
-            let _ = writeln!(io::stderr(), "{}: {}", filename, s);
+            eprintln!("{}: {}", filename, s);
             Err(())
         }
     }
@@ -43,7 +43,7 @@ fn copy_file_to_stdout<T: io::Read>(filename: &str, file: T) -> Result<(), ()> {
                 let _ = io::stdout().write(&buffer[..n]);
             }
             Err(s) => {
-                let _ = writeln!(io::stderr(), "{}: {}", filename, s);
+                eprintln!("{}: {}", filename, s);
                 return Err(());
             }
         }
