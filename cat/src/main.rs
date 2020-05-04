@@ -6,18 +6,21 @@ use std::io::Write;
 use std::process;
 
 fn main() {
+    let mut exit_status = 0;
     if env::args().len() == 1 {
         match copy_file_to_stdout("-", io::stdin()) {
             Ok(()) => {}
-            Err(()) => process::exit(1),
+            Err(()) => exit_status = 1,
+        }
+    } else {
+        for arg in env::args().skip(1) {
+            match copy_to_stdout(&arg) {
+                Ok(()) => continue,
+                Err(()) => exit_status = 1,
+            }
         }
     }
-    for arg in env::args().skip(1) {
-        match copy_to_stdout(&arg) {
-            Ok(()) => continue,
-            Err(()) => process::exit(1),
-        }
-    }
+    process::exit(exit_status);
 }
 
 fn copy_to_stdout(filename: &str) -> Result<(), ()> {
