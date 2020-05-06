@@ -58,6 +58,7 @@ impl Write for NumberedOut {
         }
         let mut chunks = buf.split(|x| *x == '\n' as u8);
         io::stdout().write(chunks.next().unwrap())?;
+
         for line in chunks {
             io::stdout().write(&['\n' as u8; 1])?;
             self.print_number().unwrap();
