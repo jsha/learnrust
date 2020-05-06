@@ -14,7 +14,12 @@ fn main() {
         }
     } else {
         for arg in env::args().skip(1) {
-            match copy_to_stdout(&arg) {
+            let result = if arg == "-" {
+                copy_file_to_stdout("-", io::stdin())
+            } else {
+                copy_to_stdout(&arg)
+            };
+            match result {
                 Ok(()) => continue,
                 Err(()) => exit_status = 1,
             }
