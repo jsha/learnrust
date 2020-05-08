@@ -46,7 +46,7 @@ fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
                     output.flush().unwrap();
                     eprintln!("{}", e);
                     // Don't exit immediately on error. Try to read any
-                    // remaining files. Mimics `cat`.
+                    // remaining files. Mimics GNU cat.
                     exit_status = 1;
                 }
             }
@@ -97,7 +97,8 @@ impl io::Write for NumberedOut {
             if *byte == '\n' as u8 {
                 // Flush at the end of each line so if the user is
                 // typing input on stdin, they see the numbered output
-                // right away (even though output is buffered). Mimics `cat`.
+                // right away (even though output is buffered).
+                // Mimics GNU cat.
                 self.output.flush()?;
             }
         }
