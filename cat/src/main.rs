@@ -90,6 +90,8 @@ impl Write for NumberedOut {
         self.output.flush()
     }
 }
+
+// copy_to opens a file and copies it to the provided output.
 fn copy_to<W: io::Write>(filename: &str, output: &mut W) -> Result<(), CatError> {
     match File::open(filename) {
         Ok(file) => copy_file_to(filename, &file, output),
@@ -113,6 +115,8 @@ impl fmt::Display for CatError {
     }
 }
 
+// copy_file_to copies bytes from the provided Read object to a Write object.
+// Errors will be prefixed with the provided filename.
 fn copy_file_to<R, W>(filename: &str, input: R, output: &mut W) -> Result<(), CatError>
 where
     R: io::Read,
@@ -120,24 +124,21 @@ where
 {
     let mut reader = io::BufReader::new(input);
     let mut buffer = [0; 1000];
+    let err = |msg: &str| -> std::result::Result<(), CatError> {
+        Err(CatError {
+            filename: filename.to_string(),
+            message: msg.to_string(),
+        })
+    };
     loop {
         match reader.read(&mut buffer) {
             Ok(0) => return Ok(()),
             Ok(n) => match output.write(&buffer[..n]) {
+                Ok(0) => return err("failed to write to output"),
                 Ok(_) => {}
-                Err(e) => {
-                    return Err(CatError {
-                        filename: filename.to_string(),
-                        message: e.to_string(),
-                    })
-                }
+                Err(e) => return err(&e.to_string()),
             },
-            Err(e) => {
-                return Err(CatError {
-                    filename: filename.to_string(),
-                    message: e.to_string(),
-                })
-            }
+            Err(e) => return err(&e.to_string()),
         }
     }
 }
