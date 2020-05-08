@@ -42,51 +42,52 @@ fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
             }
         }
     }
+    output.flush().expect("failed to flush output");
     process::exit(exit_status);
 }
 
+// NumberedOut implements Write by writing output to stdout, prefixed by
+// line numbers (starting with 1). Line numbers are only printed when there
+// are more bytes to print after them, so a file that ends in a newline
+// won't have an additional number printed after the last line.
 struct NumberedOut {
     n: i64,
-    mid_line: bool,
+    beginning_line: bool,
+    output: Box<dyn Write>,
 }
 impl NumberedOut {
     fn new() -> NumberedOut {
         NumberedOut {
             n: 0,
-            mid_line: false,
+            beginning_line: true,
+            output: Box::new(io::BufWriter::new(io::stdout())),
         }
     }
 
     fn print_number(&mut self) -> Result<usize, io::Error> {
         self.n += 1;
-        self.mid_line = false;
-        io::stdout().write(format!("{} ", self.n).as_bytes())
+        self.beginning_line = true;
+        self.output.write(format!("{} ", self.n).as_bytes())
     }
 }
 impl Write for NumberedOut {
-    fn write(&mut self, buf: &[u8]) -> std::result::Result<usize, std::io::Error> {
-        if !self.mid_line {
-            self.print_number().unwrap();
-        }
-        let mut chunks = buf.split(|x| *x == '\n' as u8);
-        io::stdout().write(chunks.next().unwrap())?;
+    fn write(&mut self, buf: &[u8]) -> Result<usize, io::Error> {
+        for byte in buf {
+            if self.beginning_line {
+                self.print_number()?;
+            }
+            if *byte == '\n' as u8 {
+                self.beginning_line = true;
+            } else {
+                self.beginning_line = false;
+            }
 
-        for line in chunks {
-            io::stdout().write(&['\n' as u8; 1])?;
-            self.print_number().unwrap();
-            io::stdout().write(line)?;
-        }
-
-        if *buf.last().unwrap() == '\n' as u8 {
-            io::stdout().write(&['\n' as u8; 1])?;
-            self.mid_line = false;
-        } else {
-            self.mid_line = true;
+            self.output.write(&[*byte][..])?;
         }
         Ok(buf.len())
     }
-    fn flush(&mut self) -> std::result::Result<(), std::io::Error> {
-        io::stdout().flush()
+    fn flush(&mut self) -> Result<(), io::Error> {
+        self.output.flush()
     }
 }
 fn copy_to<W: io::Write>(filename: &str, output: &mut W) -> Result<(), CatError> {
@@ -118,7 +119,7 @@ where
     W: io::Write,
 {
     let mut reader = io::BufReader::new(input);
-    let mut buffer = [0; 10];
+    let mut buffer = [0; 1000];
     loop {
         match reader.read(&mut buffer) {
             Ok(0) => return Ok(()),
