@@ -22,6 +22,7 @@ fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
         match copy_file_to("-", io::stdin(), output) {
             Ok(()) => {}
             Err(e) => {
+                output.flush().unwrap();
                 eprintln!("{}", e);
                 exit_status = 1
             }
@@ -36,6 +37,7 @@ fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
             match result {
                 Ok(()) => continue,
                 Err(e) => {
+                    output.flush().unwrap();
                     eprintln!("{}", e);
                     exit_status = 1;
                 }
