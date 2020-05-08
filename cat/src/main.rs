@@ -1,32 +1,44 @@
 use std::env;
+use std::fmt;
 use std::fs::File;
 use std::io;
 use std::io::Read;
 use std::io::Write;
 use std::process;
+use std::string;
 
 fn main() {
-    let mut exit_status = 0;
     let mut output: Box<dyn io::Write> = Box::new(io::stdout());
     let show_line_numbers = env::var("NUMBER").unwrap_or("0".to_string());
     if show_line_numbers == "1" {
         output = Box::new(NumberedOut::new());
     }
-    if env::args().len() == 1 {
-        match copy_file_to("-", io::stdin(), &mut output) {
+    process_args(env::args(), &mut output);
+}
+
+fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
+    let mut exit_status = 0;
+    if args.len() == 1 {
+        match copy_file_to("-", io::stdin(), output) {
             Ok(()) => {}
-            Err(()) => exit_status = 1,
+            Err(e) => {
+                eprintln!("{}", e);
+                exit_status = 1
+            }
         }
     } else {
-        for arg in env::args().skip(1) {
+        for arg in args.skip(1) {
             let result = if arg == "-" {
-                copy_file_to("-", io::stdin(), &mut output)
+                copy_file_to("-", io::stdin(), output)
             } else {
-                copy_to(&arg, &mut output)
+                copy_to(&arg, output)
             };
             match result {
                 Ok(()) => continue,
-                Err(()) => exit_status = 1,
+                Err(e) => {
+                    eprintln!("{}", e);
+                    exit_status = 1;
+                }
             }
         }
     }
@@ -77,17 +89,30 @@ impl Write for NumberedOut {
         io::stdout().flush()
     }
 }
-fn copy_to<W: io::Write>(filename: &str, output: &mut W) -> Result<(), ()> {
+fn copy_to<W: io::Write>(filename: &str, output: &mut W) -> Result<(), CatError> {
     match File::open(filename) {
         Ok(file) => copy_file_to(filename, &file, output),
-        Err(s) => {
-            let _ = writeln!(io::stderr(), "{}: {}", filename, s);
-            Err(())
+        Err(e) => {
+            return Err(CatError {
+                filename: filename.to_string(),
+                message: e.to_string(),
+            })
         }
     }
 }
 
-fn copy_file_to<R, W>(filename: &str, input: R, output: &mut W) -> Result<(), ()>
+struct CatError {
+    filename: string::String,
+    message: string::String,
+}
+
+impl fmt::Display for CatError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}: {}", self.filename, self.message)
+    }
+}
+
+fn copy_file_to<R, W>(filename: &str, input: R, output: &mut W) -> Result<(), CatError>
 where
     R: io::Read,
     W: io::Write,
@@ -97,12 +122,20 @@ where
     loop {
         match reader.read(&mut buffer) {
             Ok(0) => return Ok(()),
-            Ok(n) => {
-                let _ = output.write(&buffer[..n]);
-            }
-            Err(s) => {
-                let _ = writeln!(io::stderr(), "{}: {}", filename, s);
-                return Err(());
+            Ok(n) => match output.write(&buffer[..n]) {
+                Ok(_) => {}
+                Err(e) => {
+                    return Err(CatError {
+                        filename: filename.to_string(),
+                        message: e.to_string(),
+                    })
+                }
+            },
+            Err(e) => {
+                return Err(CatError {
+                    filename: filename.to_string(),
+                    message: e.to_string(),
+                })
             }
         }
     }
