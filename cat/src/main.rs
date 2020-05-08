@@ -69,7 +69,7 @@ impl NumberedOut {
     fn print_number(&mut self) -> Result<usize, io::Error> {
         self.n += 1;
         self.beginning_line = true;
-        self.output.write(format!("{} ", self.n).as_bytes())
+        self.output.write(format!("{:6} ", self.n).as_bytes())
     }
 }
 impl Write for NumberedOut {
@@ -85,6 +85,10 @@ impl Write for NumberedOut {
             }
 
             self.output.write(&[*byte][..])?;
+
+            if *byte == '\n' as u8 {
+                self.output.flush()?;
+            }
         }
         Ok(buf.len())
     }
