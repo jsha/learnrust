@@ -14,12 +14,20 @@ fn main() {
     process_args(env::args(), &mut output);
 }
 
+// process_args reads each file named in the command line args, and writes
+// the contents to output. If there are no args, copy stdin to output.
 fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
     let mut exit_status = 0;
     if args.len() == 1 {
         match copy_file_to("-", &mut io::stdin(), output) {
             Ok(()) => {}
             Err(e) => {
+                // flush output before printing an error so that, when
+                // run on a terminal, the error shows up in the right place
+                // relative to the output above and below it. Otherwise
+                // buffering means much of the regular output will get
+                // displayed after the error, even if it was output before
+                // the error.
                 output.flush().unwrap();
                 eprintln!("{}", e);
                 exit_status = 1
@@ -37,6 +45,8 @@ fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
                 Err(e) => {
                     output.flush().unwrap();
                     eprintln!("{}", e);
+                    // Don't exit immediately on error. Try to read any
+                    // remaining files. Mimics `cat`.
                     exit_status = 1;
                 }
             }
@@ -85,6 +95,9 @@ impl io::Write for NumberedOut {
             self.output.write(&[*byte][..])?;
 
             if *byte == '\n' as u8 {
+                // Flush at the end of each line so if the user is
+                // typing input on stdin, they see the numbered output
+                // right away (even though output is buffered). Mimics `cat`.
                 self.output.flush()?;
             }
         }
