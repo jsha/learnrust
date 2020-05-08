@@ -2,8 +2,6 @@ use std::env;
 use std::fmt;
 use std::fs::File;
 use std::io;
-use std::io::Read;
-use std::io::Write;
 use std::process;
 use std::string;
 
@@ -19,7 +17,7 @@ fn main() {
 fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
     let mut exit_status = 0;
     if args.len() == 1 {
-        match copy_file_to("-", io::stdin(), output) {
+        match copy_file_to("-", &mut io::stdin(), output) {
             Ok(()) => {}
             Err(e) => {
                 output.flush().unwrap();
@@ -30,7 +28,7 @@ fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
     } else {
         for arg in args.skip(1) {
             let result = if arg == "-" {
-                copy_file_to("-", io::stdin(), output)
+                copy_file_to("-", &mut io::stdin(), output)
             } else {
                 copy_to(&arg, output)
             };
@@ -55,7 +53,7 @@ fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
 struct NumberedOut {
     n: i64,
     beginning_line: bool,
-    output: Box<dyn Write>,
+    output: Box<dyn io::Write>,
 }
 impl NumberedOut {
     fn new() -> NumberedOut {
@@ -72,7 +70,7 @@ impl NumberedOut {
         self.output.write(format!("{} ", self.n).as_bytes())
     }
 }
-impl Write for NumberedOut {
+impl io::Write for NumberedOut {
     fn write(&mut self, buf: &[u8]) -> Result<usize, io::Error> {
         for byte in buf {
             if self.beginning_line {
@@ -96,7 +94,7 @@ impl Write for NumberedOut {
 // copy_to opens a file and copies it to the provided output.
 fn copy_to<W: io::Write>(filename: &str, output: &mut W) -> Result<(), CatError> {
     match File::open(filename) {
-        Ok(file) => copy_file_to(filename, &file, output),
+        Ok(mut file) => copy_file_to(filename, &mut file, output),
         Err(e) => {
             return Err(CatError {
                 filename: filename.to_string(),
@@ -119,28 +117,16 @@ impl fmt::Display for CatError {
 
 // copy_file_to copies bytes from the provided Read object to a Write object.
 // Errors will be prefixed with the provided filename.
-fn copy_file_to<R, W>(filename: &str, input: R, output: &mut W) -> Result<(), CatError>
+fn copy_file_to<R, W>(filename: &str, input: &mut R, output: &mut W) -> Result<(), CatError>
 where
     R: io::Read,
     W: io::Write,
 {
-    let mut reader = io::BufReader::new(input);
-    let mut buffer = [0; 1000];
-    let err = |msg: &str| -> std::result::Result<(), CatError> {
-        Err(CatError {
+    match io::copy(input, output) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(CatError {
             filename: filename.to_string(),
-            message: msg.to_string(),
-        })
-    };
-    loop {
-        match reader.read(&mut buffer) {
-            Ok(0) => return Ok(()),
-            Ok(n) => match output.write(&buffer[..n]) {
-                Ok(0) => return err("failed to write to output"),
-                Ok(_) => {}
-                Err(e) => return err(&e.to_string()),
-            },
-            Err(e) => return err(&e.to_string()),
-        }
+            message: e.to_string(),
+        }),
     }
 }
