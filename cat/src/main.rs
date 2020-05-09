@@ -3,11 +3,10 @@ use std::fmt;
 use std::fs::File;
 use std::io;
 use std::process;
-use std::string;
 
 fn main() {
     let mut output: Box<dyn io::Write> = Box::new(io::stdout());
-    let show_line_numbers = env::var("NUMBER").unwrap_or("0".to_string());
+    let show_line_numbers = env::var("NUMBER").unwrap_or_else(|_| "0".to_string());
     if show_line_numbers == "1" {
         output = Box::new(NumberedOut::new());
     }
@@ -16,7 +15,7 @@ fn main() {
 
 // process_args reads each file named in the command line args, and writes
 // the contents to output. If there are no args, copy stdin to output.
-fn process_args(args: env::Args, output: &mut Box<dyn io::Write>) {
+fn process_args(args: env::Args, output: &mut dyn io::Write) {
     let mut exit_status = 0;
     if args.len() == 1 {
         match copy_file_to("-", &mut io::stdin(), output) {
@@ -86,15 +85,15 @@ impl io::Write for NumberedOut {
             if self.beginning_line {
                 self.print_number()?;
             }
-            if *byte == '\n' as u8 {
+            if *byte == b'\n' {
                 self.beginning_line = true;
             } else {
                 self.beginning_line = false;
             }
 
-            self.output.write(&[*byte][..])?;
+            self.output.write_all(&[*byte][..])?;
 
-            if *byte == '\n' as u8 {
+            if *byte == b'\n' {
                 // Flush at the end of each line so if the user is
                 // typing input on stdin, they see the numbered output
                 // right away (even though output is buffered).
@@ -110,21 +109,19 @@ impl io::Write for NumberedOut {
 }
 
 // copy_to opens a file and copies it to the provided output.
-fn copy_to<W: io::Write>(filename: &str, output: &mut W) -> Result<(), CatError> {
+fn copy_to(filename: &str, output: &mut dyn io::Write) -> Result<(), CatError> {
     match File::open(filename) {
         Ok(mut file) => copy_file_to(filename, &mut file, output),
-        Err(e) => {
-            return Err(CatError {
-                filename: filename.to_string(),
-                message: e.to_string(),
-            })
-        }
+        Err(e) => Err(CatError {
+            filename: filename.to_string(),
+            message: e.to_string(),
+        }),
     }
 }
 
 struct CatError {
-    filename: string::String,
-    message: string::String,
+    filename: String,
+    message: String,
 }
 
 impl fmt::Display for CatError {
@@ -135,11 +132,11 @@ impl fmt::Display for CatError {
 
 // copy_file_to copies bytes from the provided Read object to a Write object.
 // Errors will be prefixed with the provided filename.
-fn copy_file_to<R, W>(filename: &str, input: &mut R, output: &mut W) -> Result<(), CatError>
-where
-    R: io::Read,
-    W: io::Write,
-{
+fn copy_file_to(
+    filename: &str,
+    input: &mut dyn io::Read,
+    output: &mut dyn io::Write,
+) -> Result<(), CatError> {
     match io::copy(input, output) {
         Ok(_) => Ok(()),
         Err(e) => Err(CatError {
