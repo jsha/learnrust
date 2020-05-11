@@ -13,13 +13,11 @@ fn main() -> Result<(), String> {
 }
 
 fn process_args() -> Result<Config, String> {
-    let is_flag = |a: &String| a.len() >= 2 && a.bytes().next().unwrap() == b'-';
-    let flags: Vec<String> = env::args().skip(1).filter(is_flag).collect();
-    let non_flags: Vec<String> = env::args().skip(1).filter(|a| !is_flag(a)).collect();
+    let mut non_flags: Vec<String> = vec![];
 
     let mut show_line_numbers: bool = false;
-    for flag in flags {
-        match flag.as_str() {
+    for arg in env::args().skip(1) {
+        match arg.as_str() {
             "-n" => show_line_numbers = true,
             "-h" => {
                 return Err(format!(
@@ -27,7 +25,10 @@ fn process_args() -> Result<Config, String> {
                     env::args().next().unwrap_or_else(|| "cat".to_string())
                 ))
             }
-            _ => return Err(format!("Unrecognized flag {}", flag)),
+            _ if arg.len() >= 2 && arg.bytes().next().unwrap() == b'-' => {
+                return Err(format!("Unrecognized flag {}", arg))
+            }
+            _ => non_flags.push(arg),
         }
     }
 
