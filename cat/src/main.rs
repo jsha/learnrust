@@ -4,22 +4,59 @@ use std::fs::File;
 use std::io;
 use std::process;
 
-fn main() {
-    let mut output: Box<dyn io::Write> = Box::new(io::stdout());
-    let show_line_numbers = env::var("NUMBER").unwrap_or_else(|_| "0".to_string());
-    if show_line_numbers == "1" {
-        output = Box::new(NumberedOut::new());
-    }
-    process_args(env::args(), &mut output);
+struct Config(Vec<String>, Box<dyn io::Write>);
+
+fn main() -> Result<(), String> {
+    let Config(ref files, ref mut output) = process_args()?;
+    process_files(files, output);
+    Ok(())
 }
 
-// process_args reads each file named in the command line args, and writes
-// the contents to output. If there are no args, copy stdin to output.
-fn process_args(args: env::Args, output: &mut dyn io::Write) {
+fn process_args() -> Result<Config, String> {
+    let is_flag = |a: &String| a.len() >= 2 && a.bytes().next().unwrap() == b'-';
+    let flags: Vec<String> = env::args().skip(1).filter(is_flag).collect();
+    let non_flags: Vec<String> = env::args().skip(1).filter(|a| !is_flag(a)).collect();
+
+    let mut show_line_numbers: bool = false;
+    for flag in flags {
+        match flag.as_str() {
+            "-n" => show_line_numbers = true,
+            "-h" => {
+                return Err(format!(
+                    "Usage: {} [-n] [file1 [file2 ...]]",
+                    env::args().next().unwrap_or_else(|| "cat".to_string())
+                ))
+            }
+            _ => return Err(format!("Unrecognized flag {}", flag)),
+        }
+    }
+
+    let output: Box<dyn io::Write> = if show_line_numbers {
+        Box::new(NumberedOut::new())
+    } else {
+        Box::new(io::stdout())
+    };
+
+    let files = if non_flags.is_empty() {
+        vec![String::from("-")]
+    } else {
+        non_flags
+    };
+    Ok(Config(files, output))
+}
+
+// process_files reads each file listed, and writes  the contents to output.
+// The special filename "-" is treated as meaning stdin.
+fn process_files(files: &[String], output: &mut dyn io::Write) {
     let mut exit_status = 0;
-    if args.len() == 1 {
-        match copy_file_to("-", &mut io::stdin(), output) {
-            Ok(()) => {}
+    for file in files {
+        let result = if file == "-" {
+            copy_file_to("-", &mut io::stdin(), output)
+        } else {
+            copy_to(&file, output)
+        };
+        match result {
+            Ok(()) => continue,
             Err(e) => {
                 // flush output before printing an error so that, when
                 // run on a terminal, the error shows up in the right place
@@ -29,25 +66,9 @@ fn process_args(args: env::Args, output: &mut dyn io::Write) {
                 // the error.
                 output.flush().unwrap();
                 eprintln!("{}", e);
-                exit_status = 1
-            }
-        }
-    } else {
-        for arg in args.skip(1) {
-            let result = if arg == "-" {
-                copy_file_to("-", &mut io::stdin(), output)
-            } else {
-                copy_to(&arg, output)
-            };
-            match result {
-                Ok(()) => continue,
-                Err(e) => {
-                    output.flush().unwrap();
-                    eprintln!("{}", e);
-                    // Don't exit immediately on error. Try to read any
-                    // remaining files. Mimics GNU cat.
-                    exit_status = 1;
-                }
+                // Don't exit immediately on error. Try to read any
+                // remaining files. Mimics GNU cat.
+                exit_status = 1;
             }
         }
     }
