@@ -1,20 +1,30 @@
-use hyper::{body::HttpBody as _, Client, Uri};
+use hyper::Uri;
+use reqwest::{blocking, Url};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    use hyper::{Body, Client, Request};
+
     let client = Client::new();
 
-    // Make a GET /ip to 'http://httpbin.org'
-    let res = client
-        .get(Uri::from_static("hxxp://httpbin.org/ip"))
-        .await?;
+    //let uri = "hxtps://example.com".parse::<Uri>().unwrap();
 
-    // And then, if the request gets a response...
-    println!("status: {}", res.status());
+    //let req = Request::builder()
+    //.method("GET")
+    //.uri(uri)
+    //.body(Body::from(""))
+    //.expect("builder");
+    //client.request(req).await?;
 
-    // Concatenate the body stream into a single buffer...
-    let buf = hyper::body::to_bytes(res).await?;
+    let url = Url::parse("hxxp://example.com").unwrap();
+    let uri2: http::Uri = url.as_str().parse().expect("yah");
 
-    println!("body: {:?}", buf);
+    let req2 = Request::builder()
+        .method("GET")
+        .uri(uri2)
+        .body(Body::from(""))
+        .expect("builder");
+    client.request(req2).await?;
+
     Ok(())
 }
