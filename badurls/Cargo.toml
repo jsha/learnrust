@@ -1,0 +1,12 @@
+[package]
+name = "badurls"
+version = "0.1.0"
+authors = ["Jacob Hoffman-Andrews <github@hoffman-andrews.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+url = { path = "../../rust/rust-url" }
+http = { path = "../../rust/http" }
+hyper = "0.13.5"
