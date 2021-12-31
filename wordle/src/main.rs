@@ -1,8 +1,9 @@
 #![feature(stdin_forwarders)]
 use std::{
     error::Error,
+    fmt::Write,
     fs::File,
-    io::{stdin, BufRead, BufReader},
+    io::{BufRead, BufReader},
 };
 
 fn load() -> Result<Vec<String>, Box<dyn Error>> {
@@ -113,23 +114,29 @@ impl Matches {
     }
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let words = load()?;
-    let mut lines_iter = stdin().lines();
-    let target = lines_iter.next().unwrap()?;
-    let guesses: Result<Vec<String>, _> = lines_iter.collect();
-    let guesses = guesses?;
-    process(&words, &target, guesses.as_ref());
-    Ok(())
+// fn main2() -> Result<(), Box<dyn Error>> {
+//     let words = load()?;
+//     let mut lines_iter = stdin().lines();
+//     let target = lines_iter.next().unwrap()?;
+//     let guesses: Result<Vec<String>, _> = lines_iter.collect();
+//     let guesses = guesses?;
+//     process(&target, guesses.as_ref());
+//     Ok(())
+// }
+
+#[derive(Default)]
+struct Analysis {
+    possibilities: Vec<Vec<String>>,
 }
 
-fn process(words: &[String], target: &str, guesses: &[String]) {
+fn process(target: &str, guesses: &[String]) -> Analysis {
     let mut all_matches: Vec<Matches> = vec![];
+    let mut analysis = Analysis::default();
     for guess in guesses {
         let m = Matches::from(&guess, &target);
         println!("{:?}", m);
         all_matches.push(m);
-        let possible: Vec<&String> = words
+        let possible: Vec<String> = WORDS
             .iter()
             .filter(|w| {
                 for m in &all_matches {
@@ -139,10 +146,133 @@ fn process(words: &[String], target: &str, guesses: &[String]) {
                 }
                 true
             })
+            .map(|x| x.clone())
             .collect();
         for p in &possible {
             println!("possible: {}", p);
         }
         println!("total possible: {}", possible.len());
+        analysis.possibilities.push(possible);
     }
+    analysis
+}
+
+use once_cell::sync::Lazy;
+use trillium::Conn;
+use trillium_router::{Router, RouterConnExt};
+
+static WORDS: Lazy<Vec<String>> = Lazy::new(|| load().unwrap());
+
+fn boxify(word: &str, target: &str) -> String {
+    word.bytes()
+        .enumerate()
+        .map(|(i, c)| {
+            let color = if target.as_bytes()[i] == c {
+                "green"
+            } else if target.bytes().any(|c2| c == c2) {
+                "yellow"
+            } else {
+                ""
+            };
+            format!("<div class='letter {}'>{}</div>", color, c as char)
+        })
+        .collect()
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    trillium_smol::run(
+        Router::new()
+            .get("/", |conn: Conn| async move { conn.ok("hello everyone") })
+            .get("/analyze/:guesses", |conn: Conn| async move {
+                let guesses: Vec<String> = conn
+                    .param("guesses")
+                    .unwrap_or("")
+                    .split(",")
+                    .map(str::to_string)
+                    .collect();
+                let target: &str = guesses.last().unwrap();
+                let analysis = process(target, &guesses);
+                let mut response = r#"<html>
+<head>
+<style>
+html {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+body {
+    margin-top: 10rem;
+}
+.poss {
+    margin-left: 2rem;
+}
+.target {
+    margin-left: 0.9rem;
+}
+.word {
+    margin-top: 0.5rem;
+    display: flex;
+}
+.letter {
+    width: 62px;
+    height: 62px;
+    font-size: 2rem;
+    background-color: #787c7e;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    text-transform: uppercase;
+}
+.letter.green {
+    background-color: #6aaa64;
+}
+.letter.yellow {
+    background-color: #c9b458;
+}
+details {
+    margin-left: 1rem;
+}
+summary::marker {
+    color: #787c7e;
+}
+</style>
+</head>
+<body>"#
+                    .to_string();
+                let blank = vec![];
+                let len = guesses.len();
+                let mut last = WORDS.len() as f64;
+                for (i, g) in guesses.iter().enumerate() {
+                    let poss = analysis.possibilities.get(i).unwrap_or(&blank);
+                    let ratio = last / poss.len() as f64;
+                    last = poss.len() as f64;
+                    let reduction = if poss.len() > 1 {
+                        format!(" ({:.1}x improved)", ratio)
+                    } else {
+                        String::new()
+                    };
+                    if i < len - 1 {
+                        write!(
+                            response,
+                            "<div class='word'>{}</div><details><summary>{} words possible{}</summary>\n",
+                            boxify(g, target),
+                            poss.len(),
+                            reduction,
+                        )
+                        .ok();
+                        for p in poss {
+                            write!(response, "<div class='poss'>{}</div>\n", p).ok();
+                        }
+                        write!(response, "</details>\n").ok();
+                    } else {
+                        write!(response, "<div class='word'>{}</div>\n", boxify(g, target)).ok();
+                    }
+                }
+                write!(response, "</body>\n").ok();
+                conn.with_header("content-type", "text/html").ok(response)
+            }),
+    );
+    Ok(())
 }
