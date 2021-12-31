@@ -1,4 +1,3 @@
-#![feature(stdin_forwarders)]
 use std::{
     error::Error,
     fmt::Write,
@@ -113,16 +112,6 @@ impl Matches {
         m
     }
 }
-
-// fn main2() -> Result<(), Box<dyn Error>> {
-//     let words = load()?;
-//     let mut lines_iter = stdin().lines();
-//     let target = lines_iter.next().unwrap()?;
-//     let guesses: Result<Vec<String>, _> = lines_iter.collect();
-//     let guesses = guesses?;
-//     process(&target, guesses.as_ref());
-//     Ok(())
-// }
 
 #[derive(Default)]
 struct Analysis {
