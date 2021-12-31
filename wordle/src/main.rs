@@ -56,25 +56,25 @@ impl Matches {
     fn matches(&self, s: &str) -> bool {
         for (i, c) in s.as_bytes().iter().enumerate() {
             if self.never.iter().any(|v| v == c) {
-                println!("eliminating {} for never {:?}", s, (i, *c as char));
+                // println!("eliminating {} for never {:?}", s, (i, *c as char));
                 return false;
             }
             if self.never_exact.iter().any(|(j, v)| (*j, v) == (i, c)) {
-                println!("eliminating {} for never_exact", s);
+                // println!("eliminating {} for never_exact", s);
                 return false;
             }
         }
 
         for (i, c) in &self.exact {
             if s.as_bytes()[*i] != *c {
-                println!("eliminating {} for exact {:?}", s, (i, *c as char));
+                // println!("eliminating {} for exact {:?}", s, (i, *c as char));
                 return false;
             }
         }
 
         for c in &self.any {
             if !matches_any(*c, s) {
-                println!("eliminating {} for any {}", s, *c as char);
+                // println!("eliminating {} for any {}", s, *c as char);
                 return false;
             }
         }
@@ -134,7 +134,6 @@ fn process(target: &str, guesses: &[String]) -> Analysis {
     let mut analysis = Analysis::default();
     for guess in guesses {
         let m = Matches::from(&guess, &target);
-        println!("{:?}", m);
         all_matches.push(m);
         let possible: Vec<String> = WORDS
             .iter()
@@ -148,10 +147,6 @@ fn process(target: &str, guesses: &[String]) -> Analysis {
             })
             .map(|x| x.clone())
             .collect();
-        for p in &possible {
-            println!("possible: {}", p);
-        }
-        println!("total possible: {}", possible.len());
         analysis.possibilities.push(possible);
     }
     analysis
@@ -190,6 +185,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .split(",")
                     .map(str::to_string)
                     .collect();
+                if guesses.len() == 0 {
+                    return conn.with_status(400).with_body("provide some words in the url, separated by commas")
+                }
+                for g in &guesses {
+                    if g.len() != 5 {
+                        return conn.with_status(400).with_body(format!("invalid guess '{}': must be 5 letters", g));
+                    }
+                }
                 let target: &str = guesses.last().unwrap();
                 let analysis = process(target, &guesses);
                 let mut response = r#"<html>
@@ -205,6 +208,7 @@ body {
 }
 .poss {
     margin-left: 2rem;
+    text-transform: uppercase;
 }
 .target {
     margin-left: 0.9rem;
