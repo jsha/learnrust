@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+body {
+    margin-top: 3rem;
+    max-width: 40ch;
+}
+input {
+  margin-bottom: 0.5em;
+}
+</style>
+</head>
+<body>
+<p>
+Analyze your <a href="https://www.powerlanguage.co.uk/wordle/">Wordle</a> game!
+Enter the guesses from a successful (or unsuccessful) Wordle game, with
+the correct answer last, and hit submit. This will give you an analysis of how
+many words were eliminated with each guess, and how many possibilities were left
+when you got the right answer.
+</p>
+<p>
+This uses a standard dictionary, not a Wordle-specific one. It has no awareness
+of winning words for any given day - it only knows the guesses you give it, and
+assumes the last one was the solution.
+</p>
+<p>
+  <A href="https://github.com/jsha/learnrust/blob/master/wordle/src/main.rs">Source on GitHub</A>
+</p>
+<form id="form">
+<input type=text><br/>
+<input type=text><br/>
+<input type=text><br/>
+<input type=text><br/>
+<input type=text><br/>
+<input type=text><br/>
+<input type=text><br/>
+<input type=submit>
+</form>
+<script>
+  document.getElementById("form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    let inputs = document.getElementsByTagName("input");
+    let qstring = "";
+    for (let inp of inputs) {
+      if (inp.value == "") {
+        continue;
+      }
+      if (qstring.length == 0) {
+        qstring = inp.value;
+      } else if (inp.value) {
+        qstring += "," + inp.value;
+      }
+    };
+    if (qstring == "") {
+      return;
+    }
+    window.location.href = document.location + "analyze/" + qstring;
+  });
+</script>
+</body>
+</html>
