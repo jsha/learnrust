@@ -1,31 +1,7 @@
-use std::{
-    error::Error,
-    fmt::Write,
-    fs::File,
-    io::{BufRead, BufReader},
-};
+use std::{error::Error, fmt::Write};
 
-fn load() -> Result<Vec<String>, Box<dyn Error>> {
-    let f = File::open("/usr/share/dict/words")?;
-    let f = BufReader::new(f);
-    let mut words = vec![];
-    let mut counts = [[0u64; 256]; 5];
-    for line in f.lines() {
-        let line = line?;
-        if line.len() == 5
-            && line.is_ascii()
-            && line
-                .as_bytes()
-                .iter()
-                .all(|x| matches!(*x as char, 'a'..='z'))
-        {
-            words.push(line.to_string());
-            for i in 0..5 {
-                counts[i][line.as_bytes()[i] as usize] += 1;
-            }
-        }
-    }
-    Ok(words)
+fn load() -> Vec<&'static str> {
+    include_str!("../wordle-words.txt").split("\n").collect()
 }
 
 #[derive(Debug)]
@@ -134,7 +110,7 @@ fn process(target: &str, guesses: &[String]) -> Analysis {
                 }
                 true
             })
-            .map(|x| x.clone())
+            .map(|x| x.to_string())
             .collect();
         analysis.possibilities.push(possible);
     }
@@ -145,7 +121,7 @@ use once_cell::sync::Lazy;
 use trillium::Conn;
 use trillium_router::{Router, RouterConnExt};
 
-static WORDS: Lazy<Vec<String>> = Lazy::new(|| load().unwrap());
+static WORDS: Lazy<Vec<&'static str>> = Lazy::new(|| load());
 
 fn boxify(word: &str, target: &str) -> String {
     word.bytes()
@@ -186,6 +162,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let analysis = process(target, &guesses);
                 let mut response = r#"<html>
 <head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 html {
     align-items: center;
@@ -194,6 +171,7 @@ html {
 }
 body {
     margin-top: 10rem;
+    font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 .poss {
     margin-left: 2rem;
@@ -209,7 +187,8 @@ body {
 .letter {
     width: 62px;
     height: 62px;
-    font-size: 2rem;
+    font-size: 32px;
+    font-weight: 700;
     background-color: #787c7e;
     color: white;
     display: flex;
@@ -229,6 +208,9 @@ details {
 }
 summary::marker {
     color: #787c7e;
+}
+#signature {
+    text-align: right;
 }
 </style>
 </head>
@@ -263,6 +245,7 @@ summary::marker {
                         write!(response, "<div class='word'>{}</div>\n", boxify(g, target)).ok();
                     }
                 }
+                write!(response, "<div id=\"signature\"><a href=\"https://wordlyze.crud.net/\">wordlyze.crud.net</a></div>").ok();
                 write!(response, "</body>\n").ok();
                 conn.with_header("content-type", "text/html").ok(response)
             }),

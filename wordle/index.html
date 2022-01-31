@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 html {
     align-items: center;
@@ -8,11 +9,12 @@ html {
     display: flex;
 }
 body {
-    margin-top: 3rem;
+    margin-top: 2rem;
     max-width: 40ch;
 }
 input {
   margin-bottom: 0.5em;
+  display: block;
 }
 </style>
 </head>
@@ -25,24 +27,19 @@ many words were eliminated with each guess, and how many possibilities were left
 when you got the right answer.
 </p>
 <p>
-This uses a standard dictionary, not a Wordle-specific one. It has no awareness
+This site has no awareness
 of winning words for any given day - it only knows the guesses you give it, and
-assumes the last one was the solution.
+assumes the last one was the solution. So it can only be used once you've
+successfully guess the answer.
 </p>
 <p>
   <A href="https://github.com/jsha/learnrust/blob/master/wordle/src/main.rs">Source on GitHub</A>
 </p>
 <form id="form">
-<input type=text><br/>
-<input type=text><br/>
-<input type=text><br/>
-<input type=text><br/>
-<input type=text><br/>
-<input type=text><br/>
-<input type=text><br/>
-<input type=submit>
+<input type=text><input type=text><input type=text><input type=text><input type=text><input type=text><input type=text><input type=submit>
 </form>
 <script>
+  document.querySelector("#form input").focus();
   document.getElementById("form").addEventListener("submit", function(e) {
     e.preventDefault();
     let inputs = document.getElementsByTagName("input");
@@ -52,9 +49,9 @@ assumes the last one was the solution.
         continue;
       }
       if (qstring.length == 0) {
-        qstring = inp.value;
+        qstring = inp.value.toLowerCase();
       } else if (inp.value) {
-        qstring += "," + inp.value;
+        qstring += "," + inp.value.toLowerCase();
       }
     };
     if (qstring == "") {
@@ -62,6 +59,12 @@ assumes the last one was the solution.
     }
     window.location.href = document.location + "analyze/" + qstring;
   });
+  document.querySelectorAll("#form input").forEach(el =>
+    el.addEventListener("input", e => {
+      if (e.target.value.length >= 5) {
+        e.target.nextSibling.focus();
+      }
+    }));
 </script>
 </body>
 </html>
