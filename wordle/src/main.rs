@@ -70,9 +70,9 @@ impl Matches {
             exact: vec![],
             never: vec![],
         };
-
+		
         for (i, (&c, &t)) in s
-            .as_bytes()
+			.as_bytes()
             .iter()
             .zip(target.as_bytes().iter())
             .enumerate()
@@ -81,9 +81,13 @@ impl Matches {
                 // green
                 m.exact.push((i, c));
             } else if matches_any(c, target) {
-                // yellow
-                m.any.push(c);
-                m.never_exact.push((i, c));
+				// yellow
+				let char_count_target = target.bytes().filter(|x| *x == c).count();
+				let char_count_guess = s.bytes().filter(|x| *x == c).count();
+				if char_count_target >= char_count_guess {
+                	m.any.push(c);
+                	m.never_exact.push((i, c));
+				}
             } else {
                 // grey
                 m.never.push(c);
@@ -134,7 +138,13 @@ fn boxify(word: &str, target: &str) -> String {
             let color = if target.as_bytes()[i] == c {
                 "green"
             } else if target.bytes().any(|c2| c == c2) {
-                "yellow"
+				let char_count_target = target.bytes().filter(|x| *x == c).count();
+				let char_count_guess = word.bytes().filter(|x| *x == c).count();
+				if char_count_target >= char_count_guess {
+	                "yellow"
+				} else {
+					""
+				}
             } else {
                 ""
             };
