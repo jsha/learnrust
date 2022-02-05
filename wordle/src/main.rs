@@ -1,7 +1,11 @@
 use std::{error::Error, fmt::Write};
 
 fn load() -> Vec<&'static str> {
-    include_str!("../wordle-words.txt").split("\n").collect()
+    include_str!("../wordle-words.txt")
+		.split("\n")
+		// .filter(|&s| !s.is_empty())
+		.filter(|&s| s.len() == 5)
+		.collect()
 }
 
 #[derive(Debug)]
