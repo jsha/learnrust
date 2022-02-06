@@ -79,7 +79,10 @@ impl Matches {
             } else if matches_any(c, target) {
 				// yellow
 				let char_count_target = target.bytes().filter(|x| *x == c).count();
-				let char_count_guess = s.bytes().filter(|x| *x == c).count();
+				let char_count_guess = s.bytes()
+										.enumerate()
+										.filter(|(j, b)| j <= &i && *b == c)
+										.count();
 				if char_count_target >= char_count_guess {
                 	m.any.push(c);
                 	m.never_exact.push((i, c));
@@ -135,7 +138,10 @@ fn boxify(word: &str, target: &str) -> String {
                 "green"
             } else if target.bytes().any(|c2| c == c2) {
 				let char_count_target = target.bytes().filter(|x| *x == c).count();
-				let char_count_guess = word.bytes().filter(|x| *x == c).count();
+				let char_count_guess = word.bytes()
+										   .enumerate()
+										   .filter(|(j, b)| j <= &i && *b == c)
+										   .count();
 				if char_count_target >= char_count_guess {
 	                "yellow"
 				} else {
