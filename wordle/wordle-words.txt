@@ -10,6 +10,7 @@ abeam
 abets
 abhor
 abide
+abled
 abler
 abode
 abort
@@ -40,6 +41,7 @@ adept
 adieu
 adman
 admen
+admin
 admit
 adobe
 adopt
@@ -68,6 +70,7 @@ agony
 agree
 ahead
 aided
+aider
 aides
 ailed
 aimed
@@ -147,6 +150,7 @@ apace
 apart
 aphid
 aping
+apnea
 appal
 apple
 apply
@@ -201,6 +205,7 @@ auger
 aught
 augur
 aunts
+aunty
 aurae
 aural
 auras
@@ -223,6 +228,7 @@ awoke
 axial
 axing
 axiom
+axion
 axles
 axons
 azure
@@ -243,6 +249,7 @@ baker
 bakes
 balds
 baled
+baler
 bales
 balks
 balky
@@ -345,7 +352,9 @@ besom
 besot
 bests
 betas
+betel
 bevel
+bezel
 bible
 bicep
 biddy
@@ -366,6 +375,7 @@ bimbo
 binds
 binge
 bingo
+biome
 biped
 birch
 birds
@@ -373,6 +383,7 @@ birth
 bison
 bitch
 bites
+bitty
 blabs
 black
 blade
@@ -402,6 +413,7 @@ blobs
 block
 blocs
 blogs
+bloke
 blond
 blood
 bloom
@@ -467,6 +479,7 @@ bossy
 bosun
 botch
 bough
+boule
 bound
 bouts
 bowed
@@ -610,6 +623,7 @@ caped
 caper
 capes
 capon
+caput
 carat
 carbs
 cards
@@ -656,6 +670,7 @@ chant
 chaos
 chaps
 chapt
+chard
 charm
 chars
 chart
@@ -822,6 +837,7 @@ copse
 coral
 cords
 cored
+corer
 cores
 corks
 corms
@@ -873,6 +889,7 @@ creed
 creek
 creel
 creep
+creme
 crepe
 crept
 cress
@@ -903,6 +920,7 @@ crude
 cruel
 cruet
 crumb
+crump
 crush
 crust
 crypt
@@ -934,7 +952,9 @@ curvy
 cushy
 cusps
 cuter
+cutie
 cutup
+cyber
 cycle
 cynic
 cysts
@@ -1059,6 +1079,7 @@ dizzy
 djinn
 docks
 dodge
+dodgy
 dodos
 doers
 doffs
@@ -1129,6 +1150,7 @@ drily
 drink
 drips
 drive
+droit
 droll
 drone
 drool
@@ -1170,6 +1192,7 @@ dupes
 dusky
 dusts
 dusty
+dutch
 duvet
 dwarf
 dweeb
@@ -1193,6 +1216,7 @@ eaves
 ebbed
 ebony
 echos
+eclat
 edema
 edged
 edger
@@ -1259,6 +1283,7 @@ ester
 ether
 ethic
 ethos
+etude
 euros
 evade
 evens
@@ -1336,9 +1361,11 @@ feeds
 feels
 feign
 feint
+fella
 fells
 felon
 felts
+femme
 femur
 fence
 fends
@@ -1358,6 +1385,7 @@ fezes
 fiats
 fiber
 fiche
+ficus
 fiefs
 field
 fiend
@@ -1368,6 +1396,7 @@ fifty
 fight
 filch
 filed
+filer
 files
 filet
 fills
@@ -1514,6 +1543,7 @@ frier
 fries
 frill
 frisk
+fritz
 frizz
 frock
 frogs
@@ -1623,10 +1653,12 @@ gimpy
 gipsy
 girds
 girls
+girly
 girth
 girts
 gismo
 given
+giver
 gives
 gizmo
 glade
@@ -1667,6 +1699,7 @@ godly
 gofer
 going
 golds
+golem
 golfs
 golly
 gonad
@@ -1814,6 +1847,7 @@ hater
 hates
 hauls
 haunt
+haute
 haven
 haves
 havoc
@@ -1938,10 +1972,12 @@ hulls
 human
 humid
 humor
+humph
 humps
 humus
 hunch
 hunks
+hunky
 hunts
 hurls
 hurry
@@ -1951,6 +1987,7 @@ husky
 hussy
 hutch
 hydra
+hydro
 hyena
 hying
 hymen
@@ -1976,6 +2013,7 @@ idyll
 idyls
 igloo
 ikons
+iliac
 image
 imams
 imbed
@@ -2000,7 +2038,9 @@ inner
 input
 inset
 inter
+intro
 inure
+ionic
 iotas
 irate
 irked
@@ -2072,9 +2112,11 @@ junco
 junks
 junky
 junta
+junto
 juror
 kabob
 kapok
+kappa
 kaput
 karat
 karma
@@ -2128,6 +2170,7 @@ koala
 kooks
 kooky
 kopek
+krill
 krone
 kudos
 kudzu
@@ -2187,6 +2230,7 @@ leafy
 leaks
 leaky
 leans
+leant
 leaps
 leapt
 learn
@@ -2317,6 +2361,7 @@ lucks
 lucky
 lucre
 lulls
+lumen
 lumps
 lumpy
 lunar
@@ -2345,6 +2390,7 @@ macho
 macro
 madam
 madly
+mafia
 magic
 magma
 maids
@@ -2361,6 +2407,7 @@ malts
 mamas
 mambo
 mamma
+mammy
 manes
 manga
 mange
@@ -2382,10 +2429,12 @@ marsh
 marts
 masks
 mason
+masse
 masts
 match
 mated
 mates
+matey
 matte
 matts
 matzo
@@ -2411,6 +2460,7 @@ media
 medic
 meets
 melds
+melee
 melon
 melts
 memes
@@ -2434,6 +2484,7 @@ mewed
 mewls
 miaow
 micra
+micro
 middy
 midge
 midst
@@ -2469,6 +2520,7 @@ mires
 mirth
 misdo
 miser
+missy
 mists
 misty
 miter
@@ -2514,6 +2566,7 @@ moray
 mores
 morns
 moron
+morph
 mosey
 mossy
 motel
@@ -2522,6 +2575,7 @@ moths
 motif
 motor
 motto
+moult
 mound
 mount
 mourn
@@ -2696,6 +2750,7 @@ olden
 older
 oldie
 olive
+ombre
 omega
 omens
 omits
@@ -2727,9 +2782,11 @@ outer
 outgo
 ovals
 ovary
+ovate
 ovens
 overs
 overt
+ovine
 ovoid
 ovule
 owing
@@ -2775,6 +2832,7 @@ papaw
 paper
 parch
 pared
+parer
 pares
 parka
 parks
@@ -2824,6 +2882,7 @@ pence
 pends
 penes
 penis
+penne
 penny
 peons
 peony
@@ -2835,6 +2894,7 @@ perky
 perms
 pesky
 pesos
+pesto
 pests
 petal
 peter
@@ -2871,6 +2931,7 @@ pimps
 pinch
 pined
 pines
+piney
 pings
 pinks
 pinky
@@ -2905,6 +2966,7 @@ plead
 pleas
 pleat
 plied
+plier
 plies
 plods
 plops
@@ -2963,6 +3025,7 @@ pouch
 pound
 pours
 pouts
+pouty
 power
 poxes
 prank
@@ -2981,6 +3044,7 @@ pried
 pries
 prigs
 prime
+primo
 primp
 print
 prior
@@ -3099,6 +3163,8 @@ rajas
 raked
 rakes
 rally
+ralph
+ramen
 ramps
 ranch
 randy
@@ -3137,12 +3203,14 @@ reams
 reaps
 rearm
 rears
+rebar
 rebel
 rebus
 rebut
 recap
 recta
 recur
+recut
 redid
 reeds
 reedy
@@ -3174,6 +3242,7 @@ reset
 resin
 rests
 retch
+retro
 retry
 reuse
 revel
@@ -3330,10 +3399,12 @@ satyr
 sauce
 saucy
 sauna
+saute
 saved
 saver
 saves
 savor
+savoy
 savvy
 sawed
 saxes
@@ -3370,10 +3441,12 @@ scowl
 scows
 scram
 scrap
+scree
 screw
 scrip
 scrod
 scrub
+scrum
 scuba
 scuds
 scuff
@@ -3408,6 +3481,7 @@ septa
 serer
 serfs
 serge
+serif
 serum
 serve
 servo
@@ -3765,6 +3839,7 @@ squab
 squad
 squat
 squaw
+squib
 squid
 stabs
 stack
@@ -3977,6 +4052,7 @@ teary
 tease
 teats
 techs
+teddy
 teems
 teens
 teeny
@@ -3998,6 +4074,7 @@ tepee
 tepid
 terms
 terns
+terra
 terry
 terse
 tests
@@ -4089,6 +4166,7 @@ tonal
 toned
 toner
 tones
+tonga
 tongs
 tonic
 tonne
@@ -4160,6 +4238,7 @@ trope
 troth
 trots
 trout
+trove
 troys
 truce
 truck
@@ -4174,6 +4253,7 @@ trust
 truth
 tryst
 tsars
+tubal
 tubas
 tubby
 tubed
@@ -4192,6 +4272,7 @@ tuner
 tunes
 tunic
 tunny
+turbo
 turds
 turfs
 turns
@@ -4214,6 +4295,7 @@ twins
 twirl
 twist
 twits
+twixt
 tying
 tykes
 typed
@@ -4228,6 +4310,7 @@ ulnas
 ultra
 umbel
 umber
+umbra
 umiak
 umped
 unbar
@@ -4236,13 +4319,16 @@ uncut
 under
 undid
 undue
+unfed
 unfit
 unify
 union
 unite
 units
 unity
+unlit
 unman
+unmet
 unpin
 unsay
 unset
@@ -4266,6 +4352,7 @@ usual
 usurp
 usury
 uteri
+utile
 utter
 uvula
 vacua
@@ -4301,6 +4388,7 @@ venue
 verbs
 verge
 verse
+verso
 verve
 vests
 vetch
@@ -4342,6 +4430,7 @@ vodka
 vogue
 voice
 voids
+voila
 voile
 voles
 volts
@@ -4473,6 +4562,7 @@ wilds
 wiled
 wiles
 wills
+willy
 wilts
 wimps
 wimpy
@@ -4583,6 +4673,7 @@ zebra
 zebus
 zeros
 zests
+zesty
 zilch
 zincs
 zings
