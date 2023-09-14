@@ -161,6 +161,7 @@ fn boxify(word: &str, target: &str) -> String {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
+    println!("running on {}:{}", std::env::var("HOST").unwrap(), std::env::var("PORT").unwrap());
     trillium_smol::run(
         Router::new()
             .get("/", |conn: Conn| async move { conn.ok("hello everyone") })
