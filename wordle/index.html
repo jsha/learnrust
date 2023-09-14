@@ -33,10 +33,17 @@ assumes the last one was the solution. So it can only be used once you've
 successfully guess the answer.
 </p>
 <p>
+The list of "possible" words is not from Wordle. It's from /usr/share/dict/words
+on an Ubuntu system, about 6,121 words.
+</p>
+<p>
+You might also like <a href="https://www.nytimes.com/2022/04/07/upshot/wordle-bot-introduction.html">WordleBot</a>.
+</p>
+<p>
   <A href="https://github.com/jsha/learnrust/blob/master/wordle/src/main.rs">Source on GitHub</A>
 </p>
 <form id="form">
-<input type=text><input type=text><input type=text><input type=text><input type=text><input type=text><input type=text><input type=submit>
+<input type=text><input type=text><input type=text><input type=text><input type=text><input type=text><input type=text><input type=text><input type=text><input type=submit>
 </form>
 <script>
   document.querySelector("#form input").focus();
@@ -57,14 +64,14 @@ successfully guess the answer.
     if (qstring == "") {
       return;
     }
-    window.location.href = document.location + "analyze/" + qstring;
+    window.location.href = document.location.pathname + "analyze/" + qstring;
   });
-  document.querySelectorAll("#form input").forEach(el =>
-    el.addEventListener("input", e => {
-      if (e.target.value.length >= 5) {
-        e.target.nextSibling.focus();
-      }
-    }));
+//  document.querySelectorAll("#form input").forEach(el =>
+//    el.addEventListener("input", e => {
+//      if (e.target.value.length >= 5) {
+//        e.target.nextSibling.focus();
+//      }
+//    }));
 </script>
 </body>
 </html>

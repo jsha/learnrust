@@ -161,10 +161,12 @@ fn boxify(word: &str, target: &str) -> String {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    println!("running on {}:{}", std::env::var("HOST").unwrap(), std::env::var("PORT").unwrap());
+    println!("running on {}:{}",
+      std::env::var("HOST").unwrap_or("127.0.0.1".into()),
+      std::env::var("PORT").unwrap_or("8080".into()));
     trillium_smol::run(
         Router::new()
-            .get("/", |conn: Conn| async move { conn.ok("hello everyone") })
+            .get("/", |conn: Conn| async move { conn.ok(include_str!("../index.html")) })
             .get("/analyze/:guesses", |conn: Conn| async move {
                 let guesses: Vec<String> = conn
                     .param("guesses")
